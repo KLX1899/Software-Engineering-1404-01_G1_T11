@@ -1,0 +1,300 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>میکروسرویس‌های پلتفرم</title>
+  <link rel="stylesheet" href="{% static 'styles/microservice.css' %}">
+</head>
+
+<body>
+  <div class="container">
+    <header class="header">
+      <div class="header-left">
+        <a href="{% url 'home' %}" class="home-btn">خانه</a>
+        <div class="nav-item">درباره ما</div>
+        <div class="nav-item">شروع یادگیری</div>
+      </div>
+
+      <div class="header-right">
+        <div class="flag-settings">
+          <img src="{% static 'public/images/settings.png' %}" alt="" class="settings-icon">
+          <div class="iran-flag">
+            <div class="flag-green"></div>
+            <div class="flag-white"></div>
+            <div class="flag-red"></div>
+          </div>
+        </div>
+
+        <div class="login-container">
+          {% if request.user.is_authenticated %}
+            <a href="{% url 'logout' %}" class="login-text">خروج</a>
+          {% else %}
+            <a href="{% url 'auth' %}" class="login-text">ورود</a>
+          {% endif %}
+
+          <div class="user-avatar" aria-hidden="true">
+            <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="15" cy="10" r="5" fill="#647eb4" />
+              <path d="M5 25C5 20 9 17 15 17C21 17 25 20 25 25" stroke="#647eb4" stroke-width="2" fill="none" />
+            </svg>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <section class="page-title-section">
+      <h1 class="page-title">میکروسرویس‌های پلتفرم آموزشی</h1>
+      <p class="page-subtitle">دسترسی به ماژول‌های مختلف توسعه داده شده توسط گروه‌های توسعه‌دهنده</p>
+    </section>
+
+    <section class="microservices-section">
+      <div class="microservices-grid">
+
+        <a href="/team1/" class="microservice-card">
+          <div class="card-header">
+            <div class="card-icon">
+              <svg width="50" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="50" height="50" rx="10" fill="#b0caff" />
+                <path d="M15 25 L20 30 L35 15" stroke="#211d63" stroke-width="3" fill="none" stroke-linecap="round" />
+              </svg>
+            </div>
+            <span class="card-badge">فعال</span>
+          </div>
+          <h3 class="card-title">میکروسرویس گروه 1</h3>
+          <p class="card-description">میکروسرویس «واژگان – مدل ممرایز»</p>
+        </a>
+
+        <a href="/team2/" class="microservice-card">
+          <div class="card-header">
+            <div class="card-icon">
+              <svg width="50" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="50" height="50" rx="10" fill="#fba199" />
+                <rect x="12" y="15" width="26" height="20" rx="2" fill="white" />
+                <rect x="15" y="20" width="8" height="3" fill="#fba199" />
+                <rect x="15" y="25" width="12" height="2" fill="#fba199" />
+              </svg>
+            </div>
+            <span class="card-badge">فعال</span>
+          </div>
+          <h3 class="card-title">میکروسرویس گروه 2</h3>
+          <p class="card-description">میکروسرویس فیلم‌های آموزشی و صفحه معلم</p>
+        </a>
+
+        <a href="/team3/" class="microservice-card">
+          <div class="card-header">
+            <div class="card-icon">
+              <svg width="50" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="50" height="50" rx="10" fill="#647eb4" />
+                <circle cx="25" cy="20" r="6" fill="white" />
+                <path d="M15 35 C15 28 19 25 25 25 C31 25 35 28 35 35" fill="white" />
+              </svg>
+            </div>
+            <span class="card-badge">فعال</span>
+          </div>
+          <h3 class="card-title">میکروسرویس گروه 3</h3>
+          <p class="card-description">برگزاری و فیدبک رایتینگ و اسپیکینگ</p>
+        </a>
+
+        <a href="/team4/" class="microservice-card">
+          <div class="card-header">
+            <div class="card-icon">
+              <svg width="50" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="50" height="50" rx="10" fill="#9fa8c9" />
+                <path d="M15 30 L20 25 L25 28 L30 20 L35 23" stroke="white" stroke-width="3" fill="none" stroke-linecap="round" />
+              </svg>
+            </div>
+            <span class="card-badge">فعال</span>
+          </div>
+          <h3 class="card-title">میکروسرویس گروه 4</h3>
+          <p class="card-description">میکروسرویس چت بلادرنگ کاربر‌به‌کاربر (User Chat & Profile)</p>
+        </a>
+
+        <a href="/team5/" class="microservice-card">
+          <div class="card-header">
+            <div class="card-icon">
+              <svg width="50" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="50" height="50" rx="10" fill="#fde4e0" />
+                <rect x="18" y="15" width="14" height="18" rx="2" stroke="#211d63" stroke-width="2" fill="none" />
+                <circle cx="25" cy="28" r="3" fill="#211d63" />
+              </svg>
+            </div>
+            <span class="card-badge">فعال</span>
+          </div>
+          <h3 class="card-title">میکروسرویس گروه 5</h3>
+          <p class="card-description">میکروسرویس «واژگان – مدل اَنکی»</p>
+        </a>
+
+        <a href="/team6/" class="microservice-card">
+          <div class="card-header">
+            <div class="card-icon">
+              <svg width="50" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="50" height="50" rx="10" fill="#c4d7f2" />
+                <path d="M25 15 L30 20 L25 25 L20 20 Z" fill="#211d63" />
+                <path d="M25 25 L30 30 L25 35 L20 30 Z" fill="#211d63" />
+              </svg>
+            </div>
+            <span class="card-badge">فعال</span>
+          </div>
+          <h3 class="card-title">میکروسرویس گروه 6</h3>
+          <p class="card-description">میکروسرویس آموزش گرامر با هوش مصنوعی</p>
+        </a>
+
+        <a href="/team7/" class="microservice-card">
+          <div class="card-header">
+            <div class="card-icon">
+              <svg width="50" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="50" height="50" rx="10" fill="#fef3e0" />
+                <circle cx="18" cy="25" r="4" fill="#211d63" />
+                <circle cx="32" cy="25" r="4" fill="#211d63" />
+                <line x1="22" y1="25" x2="28" y2="25" stroke="#211d63" stroke-width="2" />
+              </svg>
+            </div>
+            <span class="card-badge">فعال</span>
+          </div>
+          <h3 class="card-title">میکروسرویس گروه 7</h3>
+          <p class="card-description">برگزاری و ارزیابی رایتینگ و اسپیکینگ</p>
+        </a>
+
+        <a href="/team8/" class="microservice-card">
+          <div class="card-header">
+            <div class="card-icon">
+              <svg width="50" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="50" height="50" rx="10" fill="#b0caff" />
+                <rect x="15" y="18" width="20" height="14" rx="2" stroke="#211d63" stroke-width="2" fill="none" />
+                <circle cx="25" cy="25" r="3" fill="#211d63" />
+              </svg>
+            </div>
+            <span class="card-badge">فعال</span>
+          </div>
+          <h3 class="card-title">میکروسرویس گروه 8</h3>
+          <p class="card-description">میکروسرویس آموزش لغت با هوش مصنوعی</p>
+        </a>
+
+        <a href="/team9/" class="microservice-card">
+          <div class="card-header">
+            <div class="card-icon">
+              <svg width="50" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="50" height="50" rx="10" fill="#b0caff" />
+                <rect x="15" y="18" width="20" height="14" rx="2" stroke="#211d63" stroke-width="2" fill="none" />
+                <circle cx="25" cy="25" r="3" fill="#211d63" />
+              </svg>
+            </div>
+            <span class="card-badge">فعال</span>
+          </div>
+          <h3 class="card-title">میکروسرویس گروه 9</h3>
+          <p class="card-description">میکروسرویس «واژگان – مدل Tick-8»</p>
+        </a>
+
+        <a href="/team10/" class="microservice-card">
+          <div class="card-header">
+            <div class="card-icon">
+              <svg width="50" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="50" height="50" rx="10" fill="#b0caff" />
+                <rect x="15" y="18" width="20" height="14" rx="2" stroke="#211d63" stroke-width="2" fill="none" />
+                <circle cx="25" cy="25" r="3" fill="#211d63" />
+              </svg>
+            </div>
+            <span class="card-badge">فعال</span>
+          </div>
+          <h3 class="card-title">میکروسرویس گروه 10</h3>
+          <p class="card-description">میکروسرویس آزمون و تمرین لیسنینگ</p>
+        </a>
+
+        <a href="/team11/" class="microservice-card">
+          <div class="card-header">
+            <div class="card-icon">
+              <svg width="50" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="50" height="50" rx="10" fill="#fba199" />
+                <rect x="12" y="15" width="26" height="20" rx="2" fill="white" />
+                <rect x="15" y="20" width="8" height="3" fill="#fba199" />
+                <rect x="15" y="25" width="12" height="2" fill="#fba199" />
+              </svg>
+            </div>
+            <span class="card-badge">فعال</span>
+          </div>
+          <h3 class="card-title">میکروسرویس گروه 11</h3>
+          <p class="card-description">برگزاری و فیدبک رایتینگ و اسپیکینگ</p>
+        </a>
+
+        <a href="/team12/" class="microservice-card">
+          <div class="card-header">
+            <div class="card-icon">
+              <svg width="50" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="50" height="50" rx="10" fill="#647eb4" />
+                <circle cx="25" cy="20" r="6" fill="white" />
+                <path d="M15 35 C15 28 19 25 25 25 C31 25 35 28 35 35" fill="white" />
+              </svg>
+            </div>
+            <span class="card-badge">فعال</span>
+          </div>
+          <h3 class="card-title">میکروسرویس گروه 12</h3>
+          <p class="card-description">میکروسرویس آزمون و تمرین لیسنینگ</p>
+        </a>
+
+        <a href="/team13/" class="microservice-card">
+          <div class="card-header">
+            <div class="card-icon">
+              <svg width="50" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="50" height="50" rx="10" fill="#fde4e0" />
+                <rect x="18" y="15" width="14" height="18" rx="2" stroke="#211d63" stroke-width="2" fill="none" />
+                <circle cx="25" cy="28" r="3" fill="#211d63" />
+              </svg>
+            </div>
+            <span class="card-badge">فعال</span>
+          </div>
+          <h3 class="card-title">میکروسرویس گروه 13</h3>
+          <p class="card-description">برگزاری و فیدبک رایتینگ و اسپیکینگ</p>
+        </a>
+
+        <a href="/team14/" class="microservice-card">
+          <div class="card-header">
+            <div class="card-icon">
+              <svg width="50" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="50" height="50" rx="10" fill="#c4d7f2" />
+                <path d="M25 15 L30 20 L25 25 L20 20 Z" fill="#211d63" />
+                <path d="M25 25 L30 30 L25 35 L20 30 Z" fill="#211d63" />
+              </svg>
+            </div>
+            <span class="card-badge">فعال</span>
+          </div>
+          <h3 class="card-title">میکروسرویس گروه 14</h3>
+          <p class="card-description">میکروسرویس آزمون و تمرین لیسنینگ</p>
+        </a>
+
+        <a href="/team15/" class="microservice-card">
+          <div class="card-header">
+            <div class="card-icon">
+              <svg width="50" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="50" height="50" rx="10" fill="#fef3e0" />
+                <circle cx="18" cy="25" r="4" fill="#211d63" />
+                <circle cx="32" cy="25" r="4" fill="#211d63" />
+                <line x1="22" y1="25" x2="28" y2="25" stroke="#211d63" stroke-width="2" />
+              </svg>
+            </div>
+            <span class="card-badge">فعال</span>
+          </div>
+          <h3 class="card-title">میکروسرویس گروه 15</h3>
+          <p class="card-description">میکروسرویس آزمون و تمرین لیسنینگ</p>
+        </a>
+
+      </div>
+    </section>
+
+    <section class="info-section">
+      <div class="info-box">
+        <div class="info-icon">ℹ️</div>
+        <div class="info-content">
+          <h3 class="info-title">راهنمای استفاده</h3>
+          <p class="info-text">
+            هر میکروسرویس توسط یک گروه توسعه داده شده است. با کلیک روی هر کارت، به صفحه مربوط به آن میکروسرویس منتقل می‌شوید.
+          </p>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+
+</html>

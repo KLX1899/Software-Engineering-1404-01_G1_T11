@@ -1,0 +1,185 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پلتفرم آموزش زبان</title>
+    <link rel="stylesheet" href="{% static 'styles/style.css' %}">
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <a href="{% url 'microservices' %}" class="home-btn">میکروسرویس ها</a>
+                <!-- <nav class="nav-menu"> -->
+                <div class="nav-item">درباره ما</div>
+                <div class="nav-item">شروع یادگیری</div>
+                <!-- </nav> -->
+            </div>
+            <div class="header-right">
+                <div class="flag-settings">
+                    <!-- <div class="settings-icon"></div> -->
+                    <img src="{% static 'public/images/settings.png' %}" alt="" class="settings-icon">
+                    <div class="iran-flag">
+                        <div class="flag-green"></div>
+                        <div class="flag-white"></div>
+                        <div class="flag-red"></div>
+                    </div>
+                </div>
+                <div class="login-container">
+                    {% if request.user.is_authenticated %}
+                        <a href="{% url 'logout' %}" class="login-text">خروج</a>
+                    {% else %}
+                        <a href="{% url 'auth' %}" class="login-text">ورود</a>
+                        <a href="{% url 'signup' %}" class="login-text">ثبت نام</a>
+                    {% endif %}
+
+                    <div class="user-avatar">
+                        <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="15" cy="10" r="5" fill="#647eb4" />
+                            <path d="M5 25C5 20 9 17 15 17C21 17 25 20 25 25" stroke="#647eb4" stroke-width="2"
+                                fill="none" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="hero-content">
+                <h1 class="hero-title">یاد بگیر،</h1>
+                <h2 class="hero-subtitle">تمرین کن،</h2>
+                <h3 class="hero-tagline">با زبانی تازه زندگی کن !!!</h3>
+                <p class="hero-description">از سطح مبتدی تا پیشرفته</p>
+                <div class="hero-buttons">
+                    <button class="btn-level">تعیین سطح</button>
+                    <button class="btn-courses">همه دوره‌ها</button>
+                </div>
+            </div>
+            <div class="hero-illustration">
+                <img src="{% static 'public/images/header.png' %}" alt="ایلاستریشن آموزشی">
+            </div>
+        </section>
+
+        <!-- Courses Section -->
+        <section class="courses-section">
+            <h2 class="courses-title">ورود به دوره‌های اختصاصی:</h2>
+            <div class="course-cards">
+                <div class="course-card ielts">IELTS</div>
+                <div class="course-card toefl">TOEFL</div>
+                <div class="course-card general">General</div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="features-section">
+            <div class="features-header">
+                <h2 class="features-title">امکاناتی فراتر از یک دوره معمولی!</h2>
+                <p class="features-subtitle">ترکیبی از فناوری هوش مصنوعی و استانداردهای جهانی آزمون</p>
+            </div>
+
+            <div class="features-grid">
+                <!-- Feature Card 1 - AI Teacher -->
+                <div class="feature-card feature-primary">
+                    <div class="feature-icon">
+                        <img src="{% static 'public/images/1.png' %}" alt="معلم هوشمند">
+                    </div>
+                    <h3 class="feature-title">معلم خصوصی هوشمند شما</h3>
+                    <p class="feature-description">با هوش مصنوعی، سریع‌تر یاد بگیر!</p>
+                    <ul class="feature-list">
+                        <li>تصحیح آنی، نمره‌دهی و تحلیل رایتینگ و اسپیکینگ در چند ثانیه</li>
+                        <li>شناسایی حفاظ: تشخیص دقیق اشکلات گرامری، تلفظی و لغوی</li>
+                        <li>تمرین هدفمند: ارائه تمرین‌های اختصاصی بر اساس نقاط ضعف شما</li>
+                    </ul>
+                </div>
+
+                <!-- Feature Card 2 - Simulation -->
+                <div class="feature-card feature-light-blue">
+                    <div class="feature-icon">
+                        <img src="{% static 'public/images/2.png' %}" alt="شبیه‌سازی" style="max-width: 300px;">
+                    </div>
+                    <div>
+                        <h3 class="feature-title">شبیه‌ساز جامع آزمون</h3>
+                        <p class="feature-description">شبیه‌سازی ۲۰+ واقعی محیط و سوالات آزمون‌های اصلی بر اساس
+                            استانداردهای
+                            IELTS در شرایط واقعی تمرین کنید و نمره واقعی خود را پیش‌بینی کنید</p>
+                    </div>
+                </div>
+
+                <!-- Feature Card 3 - Community -->
+                <div class="feature-card feature-light-pink">
+                    <div class="feature-icon">
+                        <img src="{% static 'public/images/3.png' %}" alt="جامعه یادگیری" style="height: 200px;">
+                    </div>
+                    <h3 class="feature-title">جامعه یادگیری و کلاس‌ها</h3>
+                    <p class="feature-description">ترکیبی از آموزش حرفه‌ای و یادگیری اجتماعی. دسترسی نامحدود به کلاس‌های
+                        اساتید برتر و تعامل سازنده با دیگر کاربران برای پیشرفت سریع‌تر.</p>
+                </div>
+
+                <!-- Feature Card 4 - Treasure Box -->
+                <div class="feature-card feature-beige">
+                    <div class="feature-icon">
+                        <img src="{% static 'public/images/4.png' %}" alt="جعبه جادویی" style="height: 200px">
+                    </div>
+                    <h3 class="feature-title">جعبه جادویی واژگان</h3>
+                    <p class="feature-description">انتقال تصمیمی واژگان به حافظه بلندمدت با ترکیب علمی و هوشمندانه
+                        روش‌های فریتنر همراز و لینگ ۸</p>
+                </div>
+
+                <!-- Feature Card 5 - Roadmap -->
+                <div class="feature-card feature-purple">
+                    <div class="feature-icon">
+                        <img src="{% static 'public/images/5.png' %}" alt="نقشه راه">
+                    </div>
+                    <div>
+                        <h3 class="feature-title">نقشه راه اختصاصی شما</h3>
+                        <p class="feature-description">دیگر سردرگم نخواهید بود. هوش مصنوعی بر اساس سطح فعلی، هدف و زمان
+                            شما،
+                            یک برنامه مطالعاتی پویا و گام‌به‌گام طراحی می‌کند که با هر بار پیشرفت، می‌شود تا در
+                            کوتاه‌ترین
+                            مسیر به هدف برسید.</p>
+                    </div>
+                </div>
+
+                <!-- Feature Card 6 - Progress Analysis -->
+                <div class="feature-card feature-coral" style="text-align: center">
+                    <div class="feature-icon">
+                        <img src="{% static 'public/images/6.png' %}" alt="تحلیل پیشرفت" style="width: 50px; height: 50px;">
+                    </div>
+                    <h3 class="feature-title">تحلیل دقیق روند رشد</h3>
+                    <p class="feature-description">فراتر از یک نمره ساده؛ نمودار پیشرفت خود را در تمام مهارت‌ها به صورت
+                        روزانه رصد کنید و نقاط ضعف پنهان خود را با داده‌های دقیق بشناسید.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Social Section -->
+        <footer class="social-section">
+            <div class="social-content">
+                <p class="social-text">ما را در شبکه‌های اجتماعی دنبال کنید !</p>
+                <div class="social-icons">
+                    <a href="#" class="social-icon telegram">
+                        <img src="{% static 'public/svgs/telegram-svgrepo-com.svg' %}" alt="تلگرام">
+                    </a>
+                    <a href="#" class="social-icon instagram">
+                        <img src="{% static 'public/svgs/instagram-2016-logo-svgrepo-com.svg' %}" alt="اینستاگرام">
+                    </a>
+                    <a href="#" class="social-icon linkedin">
+                        <img src="{% static 'public/svgs/linkedin-linked-in-svgrepo-com.svg' %}" alt="لینکدین">
+                    </a>
+                </div>
+            </div>
+            <div class="social-avatar">
+                <img src="{% static 'public/images/footer.png' %}" alt="آواتار">
+                <!-- <div class="speech-bubble">از من بپرس!</div> -->
+            </div>
+        </footer>
+    </div>
+</body>
+
+</html>
