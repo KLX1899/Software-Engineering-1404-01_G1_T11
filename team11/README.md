@@ -4,6 +4,9 @@
 
 This microservice provides listening (speaking) and writing assessment functionality for the English learning platform. Users can submit writing texts or audio recordings, receive instant scores (currently static at 90), and view their submission history.
 
+[View Figma Design](https://www.figma.com/design/3uaZuwIjT0OU8v7w2cy7Df/SE1_T11?node-id=0-1&m=dev&t=wTZc2qAKki3quDGV-1)
+
+
 ## Features Implemented (Step 1)
 
 ✅ **Database Models**
@@ -170,107 +173,6 @@ team11/
 1. Go to http://localhost:8000/admin/
 2. Log in with superuser credentials
 3. Navigate to Team11 models to view/manage submissions
-
-## API Testing with cURL
-
-### Submit Writing
-
-```powershell
-# You need to be logged in first (get cookies from browser)
-curl -X POST http://localhost:8000/team11/api/submit-writing/ `
-  -H "Content-Type: application/json" `
-  -b "access_token=YOUR_TOKEN" `
-  -d '{
-    "topic": "Test topic",
-    "text_body": "This is a test writing submission with enough words to be valid."
-  }'
-```
-
-### Submit Listening
-
-```powershell
-curl -X POST http://localhost:8000/team11/api/submit-listening/ `
-  -H "Content-Type: application/json" `
-  -b "access_token=YOUR_TOKEN" `
-  -d '{
-    "topic": "Test topic",
-    "audio_url": "base64_encoded_audio_data",
-    "duration_seconds": 30
-  }'
-```
-
-## Database
-
-The team uses a separate SQLite database at `team11/team11.sqlite3` (configured via Django database router).
-
-### Database Schema
-
-**Submission Table:**
-- `submission_id` (UUID, PK)
-- `user_id` (UUID, FK to User)
-- `submission_type` (writing/listening)
-- `created_at` (DateTime)
-- `overall_score` (Float)
-- `status` (pending/in_progress/completed/failed)
-
-**WritingSubmission Table:**
-- `submission` (OneToOne to Submission, PK)
-- `topic` (String)
-- `text_body` (Text)
-- `word_count` (Integer)
-
-**ListeningSubmission Table:**
-- `submission` (OneToOne to Submission, PK)
-- `topic` (String)
-- `audio_file_url` (String)
-- `duration_seconds` (Integer)
-
-**AssessmentResult Table:**
-- `result_id` (UUID, PK)
-- `submission` (OneToOne to Submission)
-- `grammar_score` (Float)
-- `vocabulary_score` (Float)
-- `coherence_score` (Float)
-- `fluency_score` (Float)
-- `pronunciation_score` (Float)
-- `feedback_summary` (Text)
-- `suggestions` (JSON)
-
-## Next Steps (Future Implementation)
-
-### Step 2: AI Integration
-- Replace static scores with actual AI API integration
-- Implement real-time analysis of writing texts
-- Implement speech-to-text and pronunciation analysis
-- Add progress tracking and analytics
-
-### Step 3: Enhanced Features
-- File upload for audio instead of browser recording
-- Practice mode vs exam mode
-- Timed exams
-- Detailed error analysis
-- Personalized recommendations
-- Export reports as PDF
-
-## Troubleshooting
-
-### Server won't start
-- Check that port 8000 is not already in use
-- Verify .env file exists and is properly configured
-- Ensure all migrations have been run
-
-### Migrations fail
-- Delete `team11/team11.sqlite3` and run migrations again
-- Check that `team11` is in `TEAM_APPS` in `.env`
-
-### Static files not loading
-- Run `python manage.py collectstatic`
-- Check DEBUG=True in `.env` for development
-
-### Audio recording not working
-- Use HTTPS or localhost (HTTP) - browsers require secure context
-- Grant microphone permissions when prompted
-- Test in Chrome/Edge (best WebRTC support)
 
 ## Architecture Notes
 
