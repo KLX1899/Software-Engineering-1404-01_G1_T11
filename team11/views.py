@@ -186,46 +186,89 @@ def submit_listening(request):
         if not audio_url:
             return JsonResponse({'error': 'Audio URL is required'}, status=400)
         
-        # Create submission
+        # Create submission with pending status
         submission = Submission.objects.create(
             user_id=request.user.id,
             submission_type=SubmissionType.LISTENING,
-            overall_score=90.0,  # Static score for now
-            status=AnalysisStatus.COMPLETED
+            status=AnalysisStatus.IN_PROGRESS
         )
         
-        # Create listening details
-        ListeningSubmission.objects.create(
+        # Create listening details (without transcription initially)
+        listening_detail = ListeningSubmission.objects.create(
             submission=submission,
             topic=topic,
             audio_file_url=audio_url,
             duration_seconds=duration
         )
         
-        # Create assessment result
-        AssessmentResult.objects.create(
-            submission=submission,
-            pronunciation_score=90.0,
-            fluency_score=90.0,
-            vocabulary_score=90.0,
-            grammar_score=90.0,
-            coherence_score=90.0,
-            feedback_summary="Excellent speaking performance! Your pronunciation is clear.",
-            suggestions=[
-                "Work on your intonation patterns",
-                "Try to speak more naturally",
-                "Reduce filler words like 'um' and 'uh'"
-            ]
-        )
+        logger.info(f"Processing listening submission {submission.submission_id} for user {request.user.id}")
         
-        return JsonResponse({
-            'success': True,
-            'submission_id': str(submission.submission_id),
-            'score': 90.0,
-            'message': 'Audio submitted successfully'
-        })
+        # Convert URL to file path for processing
+        # Assuming audio_url is a relative path or we need to download it
+        # For now, we'll assume it's a local path accessible to the server
+        if audio_url.startswith('http://') or audio_url.startswith('https://'):
+            # For remote URLs, you would need to download the file first
+            # This is a simplified version
+            logger.warning(f"Remote audio URL provided: {audio_url}. Download logic needed.")
+            audio_file_path = audio_url  # Placeholder - needs implementation
+        else:
+            # Local file path (relative to MEDIA_ROOT or absolute)
+            if not audio_url.startswith('/') and not audio_url[1:3] == ':\\':
+                # Relative path - join with MEDIA_ROOT
+                audio_file_path = os.path.join(settings.MEDIA_ROOT, audio_url)
+            else:
+                audio_file_path = audio_url
+        
+        # Assess the speaking using AI (transcription + assessment)
+        assessment_result = assess_speaking(topic, audio_file_path, duration)
+        
+        if assessment_result['success']:
+            # Update listening detail with transcription
+            listening_detail.transcription = assessment_result.get('transcription', '')
+            listening_detail.save()
+            
+            # Update submission with overall score and completed status
+            submission.overall_score = assessment_result['overall_score']
+            submission.status = AnalysisStatus.COMPLETED
+            submission.save()
+            
+            # Create assessment result
+            AssessmentResult.objects.create(
+                submission=submission,
+                pronunciation_score=assessment_result['pronunciation_score'],
+                fluency_score=assessment_result['fluency_score'],
+                vocabulary_score=assessment_result['vocabulary_score'],
+                grammar_score=assessment_result['grammar_score'],
+                coherence_score=assessment_result['coherence_score'],
+                feedback_summary=assessment_result['feedback_summary'],
+                suggestions=assessment_result['suggestions']
+            )
+            
+            logger.info(f"Speaking assessment completed: {submission.submission_id}, score: {submission.overall_score}")
+            
+            return JsonResponse({
+                'success': True,
+                'submission_id': str(submission.submission_id),
+                'score': submission.overall_score,
+                'transcription': assessment_result.get('transcription', ''),
+                'message': 'Audio submitted and assessed successfully'
+            })
+        else:
+            # Mark as failed
+            submission.status = AnalysisStatus.FAILED
+            submission.save()
+            
+            logger.error(f"Speaking assessment failed: {submission.submission_id}, error: {assessment_result.get('error')}")
+            
+            return JsonResponse({
+                'success': False,
+                'submission_id': str(submission.submission_id),
+                'error': assessment_result.get('error', 'Assessment failed'),
+                'message': 'Submission saved but assessment failed. Please try again.'
+            }, status=500)
         
     except Exception as e:
+        logger.error(f"Error in submit_listening: {e}", exc_info=True)
         return JsonResponse({'error': str(e)}, status=500)
 
 
