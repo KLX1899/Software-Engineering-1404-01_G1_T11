@@ -1,18 +1,31 @@
-
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import MicroserviceCard from "../components/MicroserviceCard";
-import { microservices as initialData } from "../services/mockMicroservices";
 import { Link } from "react-router-dom";
 
 export default function Microservices() {
   const [q, setQ] = useState("");
-  const [items, setItems] = useState(initialData);
+  const [items, setItems] = useState([]);
   const [editingId, setEditingId] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch initial data from Django
+  useEffect(() => {
+    fetch("http://127.0.0.1:8000/team9/api/lessons/")
+      .then((res) => res.json())
+      .then((data) => {
+        setItems(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Error fetching lessons:", err);
+        setLoading(false);
+      });
+  }, []);
 
   const filtered = useMemo(() => {
     const s = q.trim();
     if (!s) return items;
-    return items.filter((x) => x.title.includes(s));
+    return items.filter((x) => x.title && x.title.includes(s));
   }, [q, items]);
 
   const addLesson = () => {
@@ -22,8 +35,9 @@ export default function Microservices() {
     const newItem = {
       id: newId,
       title: "",
-      words: 0,
+      words: [], 
       progress: 0,
+      isNew: true,
     };
 
     setItems((prev) => [newItem, ...prev]);
@@ -32,16 +46,57 @@ export default function Microservices() {
 
   const commitTitle = (id, value) => {
     const v = value.trim();
+    const item = items.find((x) => x.id === id);
 
     if (!v) {
-      
       setItems((prev) => prev.filter((x) => x.id !== id));
+      setEditingId(null);
+      return;
+    }
+
+    if (item?.isNew) {
+      fetch("http://127.0.0.1:8000/team9/api/lessons/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          title: v,
+          user_id: 1 
+        }),
+      })
+        .then((res) => res.json())
+        .then((savedItem) => {
+          setItems((prev) =>
+            prev.map((x) => (x.id === id ? savedItem : x))
+          );
+        })
+        .catch(err => console.error("POST Error:", err));
     } else {
-      setItems((prev) => prev.map((x) => (x.id === id ? { ...x, title: v } : x)));
+      fetch(`http://127.0.0.1:8000/team9/api/lessons/${id}/`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title: v }),
+      })
+        .then((res) => res.json())
+        .then((updatedItem) => {
+          setItems((prev) =>
+            prev.map((x) => (x.id === id ? updatedItem : x))
+          );
+        })
+        .catch(err => console.error("PATCH Error:", err));
     }
 
     setEditingId(null);
   };
+
+  const deleteLesson = (id) => {
+    fetch(`http://127.0.0.1:8000/team9/api/lessons/${id}/`, {
+      method: "DELETE",
+    }).then(() => {
+      setItems((prev) => prev.filter((x) => x.id !== id));
+    });
+  };
+
+  if (loading) return <div className="t9-page" dir="rtl">در حال بارگذاری...</div>;
 
   return (
     <div className="t9-page" dir="rtl" lang="fa">
@@ -72,7 +127,7 @@ export default function Microservices() {
               <MicroserviceCard
                 key={m.id}
                 id={m.id}
-                disableNav={isEditing} 
+                disableNav={isEditing}
                 title={m.title || "نام را وارد کنید"}
                 titleNode={
                   isEditing ? (
@@ -85,8 +140,7 @@ export default function Microservices() {
                       onKeyDown={(e) => {
                         if (e.key === "Enter") e.currentTarget.blur();
                         if (e.key === "Escape") {
-                         
-                          if (!m.title) {
+                          if (m.isNew) {
                             setItems((prev) => prev.filter((x) => x.id !== m.id));
                           }
                           setEditingId(null);
@@ -95,9 +149,10 @@ export default function Microservices() {
                     />
                   ) : null
                 }
-                words={m.words}
+                
+                words={Array.isArray(m.words) ? m.words.length : (m.words || 0)}
                 progress={m.progress}
-                onDelete={() => setItems((prev) => prev.filter((x) => x.id !== m.id))}
+                onDelete={() => deleteLesson(m.id)}
               />
             );
           })}

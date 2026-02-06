@@ -1,123 +1,121 @@
-import { useMemo, useState } from "react";
-import { useNavigate, useParams, Link } from "react-router-dom";
-import { microservices } from "../services/mockMicroservices";
-
-function clamp(n, a, b) {
-  return Math.max(a, Math.min(b, n));
-}
+import { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
 export default function LessonDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const lesson = useMemo(() => {
-    const numId = Number(id);
-    return microservices.find((x) => x.id === numId) || null;
+  const [lesson, setLesson] = useState(null);
+  const [rows, setRows] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch(`http://127.0.0.1:8000/team9/api/lessons/${id}/`)
+      .then((res) => res.json())
+      .then((data) => {
+        setLesson(data);
+        const formattedWords = (data.words || []).map((w) => {
+          
+          const history = w.review_history || "00000000";
+          const cellColors = Array.from(history).map((char) => {
+            if (char === "1") return "green";  
+            if (char === "2") return "orange"; 
+            return "empty";                    
+          });
+
+          return {
+            id: w.id,
+            en: w.term,
+            fa: w.definition,
+            status: w.is_learned ? "learned" : "none",
+            last_review_date: w.last_review_date,
+            review_history: history, 
+            cells: cellColors,
+          };
+        });
+        setRows(formattedWords);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Error fetching lesson detail:", err);
+        setLoading(false);
+      });
   }, [id]);
-
-
-  const initialWords = useMemo(() => {
-    const fallback = [
-      { en: "Vacation", fa: "تعطیلات" },
-      { en: "Sightseeing", fa: "گردشگری" },
-      { en: "Departure", fa: "حرکت / عزیمت" },
-      { en: "Destination", fa: "مقصد" },
-      { en: "Reception", fa: "پذیرش" },
-      { en: "Luggage", fa: "چمدان" },
-    ];
-
-    const list = (lesson?.wordList && lesson.wordList.length > 0) ? lesson.wordList : fallback;
-
-
-    return list.map((w) => ({
-      id: crypto?.randomUUID ? crypto.randomUUID() : String(Date.now() + Math.random()),
-      en: w.en,
-      fa: w.fa,
-      status: "none", // "know" | "dontknow" | "learned" | "none"
-
-      cells: Array.from({ length: 8 }, () => "empty"), // "green" | "orange" | "empty"
-    }));
-  }, [lesson]);
-
-  const [rows, setRows] = useState(initialWords);
-
-  if (!lesson) {
-    return (
-      <div className="t9-page" dir="rtl" lang="fa">
-        <header className="t9-topbar">
-          <button className="t9-pillBtn" onClick={() => navigate("/microservices")}>
-            بازگشت
-          </button>
-          <h1 className="t9-title">درس پیدا نشد</h1>
-          <button className="t9-pillBtn" onClick={() => navigate("/microservices")}>
-            خانه
-          </button>
-        </header>
-
-        <section className="t9-panel">
-          <p style={{ color: "var(--navy)" }}>
-            این درس وجود ندارد یا هنوز در mock تعریف نشده است.
-          </p>
-        </section>
-      </div>
-    );
-  }
-
 
   const learnedCount = rows.filter((r) => r.status === "learned").length;
   const total = rows.length;
   const progressPct = total === 0 ? 0 : Math.round((learnedCount / total) * 100);
 
   const mark = (rowId, type) => {
-    setRows((prev) =>
-      prev.map((r) => {
-        if (r.id !== rowId) return r;
+    const today = new Date().toISOString().split('T')[0];
+    const currentRow = rows.find(r => r.id === rowId);
+    if (!currentRow) return;
 
+    if (currentRow.last_review_date === today) {
+      alert("تیک بعدی فردا! شما امروز این کلمه را مطالعه کرده‌اید.");
+      return;
+    }
 
-        if (r.status === "learned") return r;
+    
+    const historyArray = Array.from(currentRow.review_history);
+    const targetIdx = historyArray.indexOf('0');
 
+    if (targetIdx === -1) return;
 
-        const next = [...r.cells];
-        const lastIdx = next.length - 1;
+    
+    const newChar = type === "know" ? "1" : "2";
+    historyArray[targetIdx] = newChar;
+    const newHistoryStr = historyArray.join('');
 
-        if (type === "know") next[lastIdx] = "green";
-        if (type === "dontknow") next[lastIdx] = "orange";
+    
+    const greenCount = historyArray.filter(c => c === "1").length;
+    const isNowLearned = greenCount >= 6;
 
-
-        const greenCount = next.filter((c) => c === "green").length;
-        const learned = greenCount >= clamp(Math.ceil(next.length * 0.75), 4, next.length);
-
-        return {
-          ...r,
-          status: learned ? "learned" : type,
-          cells: next,
-        };
-      })
-    );
+    
+    fetch(`http://127.0.0.1:8000/team9/api/words/${rowId}/`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        current_day: targetIdx + 1,
+        review_history: newHistoryStr, 
+        is_learned: isNowLearned,
+        last_review_date: today
+      }),
+    })
+    .then(res => res.json())
+    .then(() => {
+      setRows((prev) =>
+        prev.map((r) => {
+          if (r.id !== rowId) return r;
+          return {
+            ...r,
+            review_history: newHistoryStr,
+            status: isNowLearned ? "learned" : type,
+            cells: historyArray.map(c => c === "1" ? "green" : c === "2" ? "orange" : "empty"),
+            last_review_date: today
+          };
+        })
+      );
+    })
+    .catch(err => console.error("Update Error:", err));
   };
 
   const removeWord = (rowId) => {
-    setRows((prev) => prev.filter((r) => r.id !== rowId));
+    if(!window.confirm("حذف شود؟")) return;
+    fetch(`http://127.0.0.1:8000/team9/api/words/${rowId}/`, { method: "DELETE" })
+      .then(() => setRows(prev => prev.filter(r => r.id !== rowId)));
   };
+
+  if (loading) return <div className="t9-page" dir="rtl">در حال بارگذاری...</div>;
 
   return (
     <div className="t9-page" dir="rtl" lang="fa">
       <header className="t9-topbar t9-topbar--detail">
         <div className="t9-topbarLeft">
-          <button className="t9-pillBtn" onClick={() => navigate("/microservices")}>
-            بازگشت
-          </button>
-
-            <button
-            className="t9-pillBtn"
-            onClick={() => navigate(`/microservices/${id}/review`)}
-            >
-            مرور لغات
-            </button>
-
+          <button className="t9-pillBtn" onClick={() => navigate("/microservices")}>بازگشت</button>
+          <button className="t9-pillBtn" onClick={() => navigate(`/microservices/${id}/review`)}>مرور لغات</button>
         </div>
-
-        <h1 className="t9-title">{lesson.title}</h1>
+        <h1 className="t9-title">{lesson?.title}</h1>
       </header>
 
       <section className="t9-panel">
@@ -129,49 +127,29 @@ export default function LessonDetail() {
         <div className="t9-wordsBox">
           {rows.map((r) => (
             <div className="t9-wordRow" key={r.id}>
-              
               <div className="t9-wordEn">{r.en}</div>
-
-              
               <div className="t9-wordActions">
                 {r.status === "learned" ? (
                   <span className="t9-learnedTag">یاد گرفته شده</span>
                 ) : (
                   <>
-                    <button className="t9-chip t9-chip--green" onClick={() => mark(r.id, "know")}>
-                      میدانم
-                    </button>
-                    <button className="t9-chip t9-chip--orange" onClick={() => mark(r.id, "dontknow")}>
-                      نمیدانم
-                    </button>
+                    <button className="t9-chip t9-chip--green" onClick={() => mark(r.id, "know")}>میدانم</button>
+                    <button className="t9-chip t9-chip--orange" onClick={() => mark(r.id, "dontknow")}>نمیدانم</button>
                   </>
                 )}
               </div>
-
-              
               <div className="t9-cells">
                 {r.cells.map((c, i) => (
                   <span
                     key={i}
-                    className={[
-                      "t9-cell",
-                      c === "green" ? "t9-cell--green" : "",
-                      c === "orange" ? "t9-cell--orange" : "",
-                    ].join(" ")}
-                    aria-hidden="true"
+                    className={`t9-cell ${c === "green" ? "t9-cell--green" : ""} ${c === "orange" ? "t9-cell--orange" : ""}`}
                   />
                 ))}
               </div>
-
-             
-              <button className="t9-trashBtn" onClick={() => removeWord(r.id)} title="حذف واژه">
-                🗑️
-              </button>
+              <button className="t9-trashBtn" onClick={() => removeWord(r.id)}>🗑️</button>
             </div>
           ))}
         </div>
-
-
       </section>
     </div>
   );

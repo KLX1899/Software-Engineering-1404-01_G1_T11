@@ -286,7 +286,7 @@
 .t9-chip--orange {
   background: #fb7b63;
   color: #3b130c;
-  direction: ltr;
+
 }
 
 .t9-learnedTag {
@@ -299,7 +299,7 @@
   gap: 6px;
   justify-content: flex-start;
   flex-wrap: nowrap;
-  direction: ltr;
+  
 }
 
 .t9-cell {
@@ -307,7 +307,7 @@
   height: 26px;
   border-radius: 9px;
   background: #cfe0ff;
-  direction: ltr;
+
 }
 
 .t9-cell--green {
