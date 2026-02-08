@@ -24,7 +24,7 @@ API_BASE_URL = "https://api.gapgpt.app/v1"
 API_KEY = "sk-NQIf9DDM88vlR7to5iys8BFQYwlHTvbtKZeVlwMawdEMOk61"
 
 # Initialize OpenAI client with a timeout to avoid hanging requests
-client = OpenAI(base_url=API_BASE_URL, api_key=API_KEY, timeout=30.0)
+client = OpenAI(base_url=API_BASE_URL, api_key=API_KEY, timeout=300.0)
 
 # Model names
 DEEPSEEK_MODEL = "deepseek-chat"
